@@ -1,5 +1,5 @@
 import React from 'react';
-import Form from '../components/Form';
+import Form from '../components/ProgramsForm';
 
 const ProgramCreateAndUpdate = ({ details }) => {
   const { id } = details.match.params;
