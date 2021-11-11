@@ -23,13 +23,13 @@ const Form = ({ method, id }) => {
   let history = useHistory();
 
   useEffect(() => {
-    async function getResponse() {
-      if (id) {
-        const response = await axios.get(`/api/programs/${id}`);
-        setState(response.data);
-      }
-    }
-    getResponse();
+    // async function getResponse() {
+    //   if (id) {
+    //     const response = await axios.get(`/api/programs/${id}`);
+    //     setState(response.data);
+    //   }
+    // }
+    // getResponse();
   }, [id]);
 
   /**
@@ -42,24 +42,23 @@ const Form = ({ method, id }) => {
     // noone likes to look for a typo in the url
     // Just declare and reuse them
     const UPLOAD_URL = 'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload';
-    const images = [];
     // Declare the list of Promises
-    const workers = [];
+    // const workers = [];
     // Then go through the array of objects you want to upload
     const formData = new FormData();
-    Array.from(selectedImage).map(async (file) => {
+    const workers = Array.from(selectedImage).map(async (file) => {
       formData.append('file', file);
       formData.append('upload_preset', 'wk36xs0c');
       // Every time we do async call, we push that call to array
-      workers.push(await axios.post(UPLOAD_URL, formData));
+      return axios.post(UPLOAD_URL, formData);
     })
     // After we went through the upload array, we need to react on the response
-    Promise.all(workers).then(responseList => {
-      responseList.map(response => {
+    Promise.all(workers).then(async (responseList) => {
+      const images = responseList.map(response => {
         // Also here is the thing called "destructuring"
         // Only works if the names are the same
         const { url, fileName } = response.data;
-        images.push({ url, fileName });
+        return { url, fileName };
       })
       // At this point we have all images in our array
       // So we can compose the data object to send a request
@@ -81,7 +80,7 @@ const Form = ({ method, id }) => {
     })
   }
   
-  let selectedImages = [];
+  // let selectedImages = [];
   const handleSubmit = async (evt) => {
     try {
       if (method === 'create') {
