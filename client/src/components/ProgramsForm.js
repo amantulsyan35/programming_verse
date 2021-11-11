@@ -32,44 +32,94 @@ const Form = ({ method, id }) => {
     getResponse();
   }, [id]);
 
+  /**
+   * A function to handle async images upload
+   * Keep in mind that it can be shortened
+   * But I like explicit declaration so bare with me
+   */
+  const createImages = async () => {
+    // Please declare your URL`s and API`s as constants at least
+    // noone likes to look for a typo in the url
+    // Just declare and reuse them
+    const UPLOAD_URL = 'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload';
+    const images = [];
+    // Declare the list of Promises
+    const workers = [];
+    // Then go through the array of objects you want to upload
+    const formData = new FormData();
+    Array.from(selectedImage).map(async (file) => {
+      formData.append('file', file);
+      formData.append('upload_preset', 'wk36xs0c');
+      // Every time we do async call, we push that call to array
+      workers.push(await axios.post(UPLOAD_URL, formData));
+    })
+    // After we went through the upload array, we need to react on the response
+    Promise.all(workers).then(responseList => {
+      responseList.map(response => {
+        // Also here is the thing called "destructuring"
+        // Only works if the names are the same
+        const { url, fileName } = response.data;
+        images.push({ url, fileName });
+      })
+      // At this point we have all images in our array
+      // So we can compose the data object to send a request
+      const { title, description, code, linesOfCode } = state;
+      const data = {
+        title,
+        images,
+        description,
+        code,
+        linesOfCode,
+      }
+      // And the final request =)
+      const response2 = await axios.post('/api/programs', data);
+      console.log(response2);
+    }).catch(error => {
+      // Don't forget about the error handling
+      // Promise await will stop as soon as any of the calls in workers array fails 
+      console.error(error)
+    })
+  }
+  
   let selectedImages = [];
   const handleSubmit = async (evt) => {
     try {
       if (method === 'create') {
         evt.preventDefault();
         history.push('/programs');
-        const formData = new FormData();
+        await createImages();
+        // const formData = new FormData();
 
-        Array.from(selectedImage).map(async (file) => {
-          formData.append('file', file);
-          formData.append('upload_preset', 'wk36xs0c');
-          const response = await axios.post(
-            'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload',
-            formData
-          );
+        // Array.from(selectedImage).map(async (file) => {
+        //   formData.append('file', file);
+        //   formData.append('upload_preset', 'wk36xs0c');
+        //   const response = await axios.post(
+        //     'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload',
+        //     formData
+        //   );
 
-          let imgData = {
-            url: response.data.url,
-            fileName: response.data.original_filename,
-          };
-          selectedImages.push(imgData);
-        });
+        //   let imgData = {
+        //     url: response.data.url,
+        //     fileName: response.data.original_filename,
+        //   };
+        //   selectedImages.push(imgData);
+        // });
 
-        // TODO: WHY IS THE STATE NOT UPDATING DIRECTLY
-        let data = await {
-          title: state.title,
-          images: selectedImages,
-          description: state.description,
-          code: state.code,
-          linesOfCode: state.linesOfCode,
-        };
+        // // TODO: WHY IS THE STATE NOT UPDATING DIRECTLY
+        // let data = await {
+        //   title: state.title,
+        //   images: selectedImages,
+        //   description: state.description,
+        //   code: state.code,
+        //   linesOfCode: state.linesOfCode,
+        // };
 
-        console.log(data);
-        console.log(selectedImages);
-        console.log(state);
+        // console.log(data);
+        // console.log(selectedImages);
+        // console.log(state);
 
-        const response2 = await axios.post('/api/programs', data);
-        console.log(response2);
+        // const response2 = await axios.post('/api/programs', data);
+        // console.log(response2);
       } else {
         history.push(`/programs/${id}`);
         const formData = new FormData();
