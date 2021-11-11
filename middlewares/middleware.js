@@ -1,5 +1,5 @@
-const Program = require('./models/programs');
-const Review = require('./models/review');
+const Program = require('../models/programs');
+const Review = require('../models/review');
 
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {

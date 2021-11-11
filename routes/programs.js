@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Program = require('../models/programs');
-const { isLoggedIn, isAuthor } = require('../middleware');
+const { isLoggedIn, isAuthor } = require('../middlewares/middleware');
 
 router.get('/', async (req, res) => {
   const programs = await Program.find({});

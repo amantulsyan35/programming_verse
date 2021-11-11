@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const { isLoggedIn, isReviewAuthor } = require('../middleware');
+const { isLoggedIn, isReviewAuthor } = require('../middlewares/middleware');
 
 //Database models
 const Program = require('../models/programs');
