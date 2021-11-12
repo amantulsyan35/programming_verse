@@ -19,7 +19,7 @@ const Form = ({ method, id }) => {
     linesOfCode: '',
   });
   const [selectedImage, setSelectedImage] = useState(null);
-  // const [d, setD] = useState({});
+
   let history = useHistory();
 
   useEffect(() => {
@@ -72,7 +72,6 @@ const Form = ({ method, id }) => {
       });
   };
 
-  // let selectedImages = [];
   const handleSubmit = async (evt) => {
     try {
       if (method === 'create') {
