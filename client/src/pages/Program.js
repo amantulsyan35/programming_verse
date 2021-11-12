@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import StarRatings from 'react-star-ratings';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { Carousel } from 'react-bootstrap';
 
 import ProgramCard from '../components/ProgramCard';
 import FormInput from '../components/FormInput';
@@ -25,10 +26,11 @@ const Program = ({ details }) => {
     try {
       async function getResponse() {
         const response = await axios.get(`/api/programs/${id}`);
-        console.log(response.data);
+
         setProgram(response.data);
         setProgImages(response.data.images);
         setAuthorName(response.data.author.username);
+        console.log(response.data.reviews);
         setReviews(response.data.reviews);
         const response2 = await axios.get('/api/auth/currentuser');
         setCurrentUser(response2.data);
@@ -43,6 +45,7 @@ const Program = ({ details }) => {
   //star rating
   const changeRating = (newRating, name) => {
     setState({
+      ...state,
       rating: newRating,
     });
   };
@@ -76,7 +79,7 @@ const Program = ({ details }) => {
   return (
     <div className='container'>
       <div className='row mt-5'>
-        <div className='col-6'>
+        <div className='col-6 '>
           <ProgramCard
             id={program._id}
             title={program.title}
@@ -94,58 +97,15 @@ const Program = ({ details }) => {
         </div>
 
         <div className='col-6'>
-          <div
-            id='programCarousel'
-            className='carousel slide'
-            data-ride='carousel'
-          >
-            <div className='carousel-inner'>
-              {progImages.map((img, i) => {
-                return (
-                  <div
-                    key={i}
-                    className={
-                      i === 0 ? 'carousel-item active' : 'carousel-item'
-                    }
-                  >
-                    <img
-                      className='d-block w-100'
-                      src={img.url}
-                      alt='First slide'
-                    />
-                  </div>
-                );
-              })}
-            </div>
-            {progImages.length > 1 && (
-              <>
-                <Link
-                  className='carousel-control-prev'
-                  to='#programCarousel'
-                  role='button'
-                  data-slide='prev'
-                >
-                  <span
-                    className='carousel-control-prev-icon'
-                    aria-hidden='true'
-                  ></span>
-                  <span className='sr-only'>Previous</span>
-                </Link>
-                <Link
-                  className='carousel-control-next'
-                  to='#campgroundCarousel'
-                  role='button'
-                  data-slide='next'
-                >
-                  <span
-                    className='carousel-control-next-icon'
-                    aria-hidden='true'
-                  ></span>
-                  <span className='sr-only'>Next</span>
-                </Link>
-              </>
-            )}
-          </div>
+          <Carousel className='mb-4'>
+            {progImages.map((img, i) => {
+              return (
+                <Carousel.Item key={i}>
+                  <img className='d-block w-100' src={img.url} alt='Slide' />
+                </Carousel.Item>
+              );
+            })}
+          </Carousel>
           {currentUser && (
             <>
               <h2>Leave a Review</h2>

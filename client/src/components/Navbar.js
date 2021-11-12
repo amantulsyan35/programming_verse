@@ -17,7 +17,7 @@ const Navbar = ({ data, handleData }) => {
     <nav className='navbar sticky-top navbar-expand-lg navbar-dark bg-dark'>
       <div className='container-fluid'>
         <Link className='navbar-brand' to='#'>
-          Progshow
+          <i className='fas fa-code'></i>
         </Link>
         <button
           className='navbar-toggler'

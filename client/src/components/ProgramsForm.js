@@ -11,7 +11,7 @@ const Form = ({ method, id }) => {
     images: [
       {
         url: '',
-        fileName: '',
+        original_filename: '',
       },
     ],
     description: '',
@@ -32,66 +32,56 @@ const Form = ({ method, id }) => {
     getResponse();
   }, [id]);
 
-  let selectedImages = [];
+  const createImages = async (method) => {
+    const UPLOAD_URL = 'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload';
+
+    const formData = new FormData();
+    const workers = Array.from(selectedImage).map(async (file) => {
+      formData.append('file', file);
+      formData.append('upload_preset', 'wk36xs0c');
+
+      return axios.post(UPLOAD_URL, formData);
+    });
+
+    Promise.all(workers)
+      .then(async (responseList) => {
+        const images = responseList.map((response) => {
+          const { url, original_filename } = response.data;
+          return { url, original_filename };
+        });
+
+        const { title, description, code, linesOfCode } = state;
+        const data = {
+          title,
+          images,
+          description,
+          code,
+          linesOfCode,
+        };
+
+        if (method === 'create') {
+          const response2 = await axios.post('/api/programs', data);
+          console.log(response2);
+        } else {
+          const response2 = await axios.put(`/api/programs/${id}/edit`, data);
+          console.log(response2);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  // let selectedImages = [];
   const handleSubmit = async (evt) => {
     try {
       if (method === 'create') {
         evt.preventDefault();
         history.push('/programs');
-        const formData = new FormData();
-
-        Array.from(selectedImage).map(async (file) => {
-          formData.append('file', file);
-          formData.append('upload_preset', 'wk36xs0c');
-          const response = await axios.post(
-            'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload',
-            formData
-          );
-
-          let imgData = {
-            url: response.data.url,
-            fileName: response.data.original_filename,
-          };
-          selectedImages.push(imgData);
-        });
-
-        // TODO: WHY IS THE STATE NOT UPDATING DIRECTLY
-        let data = await {
-          title: state.title,
-          images: selectedImages,
-          description: state.description,
-          code: state.code,
-          linesOfCode: state.linesOfCode,
-        };
-
-        console.log(data);
-        console.log(selectedImages);
-        console.log(state);
-
-        const response2 = await axios.post('/api/programs', data);
-        console.log(response2);
+        await createImages('create');
       } else {
         history.push(`/programs/${id}`);
-        const formData = new FormData();
-        formData.append('file', selectedImage);
-        formData.append('upload_preset', 'wk36xs0c');
-        const response = await axios.post(
-          'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload',
-          formData
-        );
-        let data = {
-          title: state.title,
-          description: state.description,
-          code: state.code,
-          linesOfCode: state.linesOfCode,
-          images: [
-            {
-              url: response.data.url,
-              fileName: response.data.original_filename,
-            },
-          ],
-        };
-        await axios.put(`/api/programs/${id}/edit`, data);
+        await createImages('edit');
       }
     } catch (e) {
       console.log(e);
@@ -111,56 +101,54 @@ const Form = ({ method, id }) => {
   };
 
   return (
-    <div className='container'>
-      <form onSubmit={handleSubmit}>
-        <FormInput
-          type='text'
-          label='title'
-          handleChange={handleChange}
-          name='title'
-          value={state.title}
+    <form onSubmit={handleSubmit}>
+      <FormInput
+        type='text'
+        label='title'
+        handleChange={handleChange}
+        name='title'
+        value={state.title}
+        className='form-control'
+      />
+      <div className='mb-3'>
+        <label className='form-label'>Image</label>
+        <input
+          type='file'
+          onChange={onUploadImage}
+          name='image'
           className='form-control'
+          multiple
         />
-        <div className='mb-3'>
-          <label className='form-label'>Image</label>
-          <input
-            type='file'
-            onChange={onUploadImage}
-            name='image'
-            className='form-control'
-            multiple
-          />
-        </div>
-        <FormInput
-          type='textarea'
-          label='description'
-          handleChange={handleChange}
-          name='description'
-          value={state.description}
-          className='form-control'
-        />
-        <Editor
-          language='javascript'
-          value={state.code}
-          handleChange={handleChange}
-          name='code'
-          readOnly={false}
-        />
+      </div>
+      <FormInput
+        type='textarea'
+        label='description'
+        handleChange={handleChange}
+        name='description'
+        value={state.description}
+        className='form-control'
+      />
+      <Editor
+        language='javascript'
+        value={state.code}
+        handleChange={handleChange}
+        name='code'
+        readOnly={false}
+      />
 
-        <FormInput
-          type='number'
-          label='Lines Of Code'
-          handleChange={handleChange}
-          name='linesOfCode'
-          value={state.linesOfCode}
-          className='form-control'
-        />
+      <FormInput
+        type='number'
+        label='Lines Of Code'
+        handleChange={handleChange}
+        name='linesOfCode'
+        value={state.linesOfCode}
+        className='form-control'
+      />
 
-        <div className='mb-3'>
-          <input className='btn btn-success' type='submit' />
-        </div>
-      </form>
-    </div>
+      <div className='mb-3'>
+        <input className='btn btn-success ' type='submit' />
+      </div>
+    </form>
   );
 };
 

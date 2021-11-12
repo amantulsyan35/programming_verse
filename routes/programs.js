@@ -22,10 +22,9 @@ router.get('/:id', async (req, res, next) => {
 });
 
 router.post('/', isLoggedIn, async (req, res) => {
-  console.log(req.body.images);
-  // const program = new Program(req.body);
-  // program.author = req.user._id;
-  // await program.save();
+  const program = new Program(req.body);
+  program.author = req.user._id;
+  await program.save();
 });
 
 router.put('/:id/edit', isLoggedIn, isAuthor, async (req, res) => {

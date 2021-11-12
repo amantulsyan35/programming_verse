@@ -8,6 +8,7 @@ const session = require('express-session');
 const { urlencoded } = require('express');
 const passport = require('passport');
 const localStrategy = require('passport-local');
+const mongoSanitize = require('express-mongo-sanitize');
 
 //models
 const User = require('./models/user');
@@ -24,6 +25,12 @@ mongoose
 
 app.use(urlencoded({ extended: true }));
 app.use(express.json());
+app.use(
+  mongoSanitize({
+    replaceWith: '_',
+  })
+);
+
 const sessionConfig = {
   secret: 'thisshouldbeabettersecret',
   resave: false,

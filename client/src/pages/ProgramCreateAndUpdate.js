@@ -7,10 +7,23 @@ const ProgramCreateAndUpdate = ({ details }) => {
   //TODO: CHANGE THE NAME OF THE FORM OR COMBINE IN ONE FILE
 
   return (
-    <div className='  mt-5 row'>
-      <h1 className='text-center'>{id ? 'Edit Program' : 'Create Program'}</h1>
-      <div className='col-6 offset-3'>
-        <Form method={id ? 'edit' : 'create'} id={id} />
+    <div className='container d-flex justify-content-center align-items-center mt-5 mb-5'>
+      <div className='row'>
+        <div className='col-md-6  col-xl-12 '>
+          <div className='card shadow'>
+            <img
+              src='https://marketsplash.com/content/images/2021/03/Best-illustration-tools.png'
+              alt=''
+              className='card-img-top'
+            />
+            <div className='card-body'>
+              <h5 className='card-title'>
+                {id ? 'Edit Program' : 'Create Program'}
+              </h5>
+              <Form method={id ? 'edit' : 'create'} id={id} />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

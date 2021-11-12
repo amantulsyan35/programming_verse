@@ -32,31 +32,40 @@ const Login = ({ handleData }) => {
   };
 
   return (
-    <div className='  mt-5 row'>
-      <h1 className='text-center'>Login</h1>
-      <div className='col-6 offset-3'>
-        <div className='container'>
-          <form onSubmit={handleSubmit}>
-            <FormInput
-              type='text'
-              label='Enter Username'
-              handleChange={handleChange}
-              name='username'
-              value={state.username}
-              className='form-control'
+    <div className='container d-flex justify-content-center align-items-center mt-5 mb-5'>
+      <div className='row'>
+        <div className='col-md-6 offset-md-3 col-xl-6 '>
+          <div className='card shadow'>
+            <img
+              src='https://media.gcflearnfree.org/content/5e31ca08bc7eff08e4063776_01_29_2020/ProgrammingIllustration.png'
+              alt=''
+              className='card-img-top'
             />
-            <FormInput
-              type='password'
-              label='Enter Password'
-              handleChange={handleChange}
-              name='password'
-              value={state.password}
-              className='form-control'
-            />
-            <div className='mb-3'>
-              <input className='btn btn-success' type='submit' />
+            <div className='card-body'>
+              <h5 className='card-title'>Login</h5>
+              <form onSubmit={handleSubmit}>
+                <FormInput
+                  type='text'
+                  label='Enter Username'
+                  handleChange={handleChange}
+                  name='username'
+                  value={state.username}
+                  className='form-control'
+                />
+                <FormInput
+                  type='password'
+                  label='Enter Password'
+                  handleChange={handleChange}
+                  name='password'
+                  value={state.password}
+                  className='form-control'
+                />
+                <div className='mb-3'>
+                  <input className='btn btn-success' type='submit' />
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

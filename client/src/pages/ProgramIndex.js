@@ -16,17 +16,26 @@ const ProgramIndex = () => {
   }, []);
 
   return (
-    <div className='container mt-5'>
-      <h1 className='text-center'>Program Index</h1>
-      <ul className='mt-5'>
+    <div className='container mt-3 '>
+      <div
+        style={{
+          width: '100%',
+          height: '200px',
+          backgroundImage: `url(${'https://cdnwebsite.databox.com/wp-content/uploads/2018/02/02130334/DesignToolsBG.jpg'})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'none',
+        }}
+      ></div>
+      <h2 className='text-center mt-3'>Program Index</h2>
+      <ul className=' container mt-5'>
         {programs.map((p) => {
           return (
             <Card
               key={p._id}
               id={p._id}
               title={p.title}
-              // image={p.images[0].url}
-              image='https://media.gcflearnfree.org/content/5e31ca08bc7eff08e4063776_01_29_2020/ProgrammingIllustration.png'
+              image={p.images[0].url}
               description={p.description}
               language={p.language}
             />

@@ -16,7 +16,7 @@ const programSchema = new Schema({
   images: [
     {
       url: String,
-      fileName: String,
+      original_filename: String,
     },
   ],
   code: {
