@@ -11,20 +11,32 @@ import Program from './pages/Program';
 import ProgramCreateAndUpdate from './pages/ProgramCreateAndUpdate';
 import UserCreateAndUpdate from './pages/UserCreateAndUpdate';
 import Login from './pages/Login';
+import User from './pages/User';
 
 import ProtectedRoute from './ProtectedRoutes';
 
 function App() {
   const userInfo = JSON.parse(window.localStorage.getItem('userData'));
+
   const [data, setData] = useState(userInfo);
+  const [user, setUser] = useState(null);
 
   const handleData = (res) => {
     setData(res);
   };
 
+  const handleUser = (res) => {
+    setUser(res);
+  };
+
   return (
     <div className='d-flex flex-column vh-100 '>
-      <Navbar data={data} handleData={handleData} />
+      <Navbar
+        data={data}
+        handleData={handleData}
+        handleUser={handleUser}
+        user={user}
+      />
       <Switch>
         <Route exact path='/' render={() => <Landing />} />
         <Route exact path='/programs' render={() => <ProgramIndex />} />
@@ -48,7 +60,18 @@ function App() {
           path='/auth/register'
           render={(routeProps) => <UserCreateAndUpdate details={routeProps} />}
         />
-        <Route exact path='/auth/login' render={(routeProps) => <Login />} />
+        <Route
+          exact
+          path='/auth/login'
+          render={(routeProps) => (
+            <Login handleData={handleData} handleUser={handleUser} />
+          )}
+        />
+        <Route
+          exact
+          path='/users/:id'
+          render={(routeProps) => <User details={routeProps} />}
+        />
       </Switch>
       <Footer />
     </div>

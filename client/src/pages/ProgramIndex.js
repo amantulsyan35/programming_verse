@@ -7,12 +7,15 @@ const ProgramIndex = () => {
   const [programs, setPrograms] = useState([]);
 
   useEffect(() => {
-    async function getResponse() {
-      const response = await axios.get('/api/programs');
-
-      setPrograms(response.data);
+    try {
+      async function getResponse() {
+        const response = await axios.get('/api/programs');
+        setPrograms(response.data);
+      }
+      getResponse();
+    } catch (e) {
+      alert(e);
     }
-    getResponse();
   }, []);
 
   return (

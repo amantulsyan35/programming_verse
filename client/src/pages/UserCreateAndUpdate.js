@@ -23,16 +23,20 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
   };
 
   const handleSubmit = async (evt) => {
-    // if (method === 'create') {
-    evt.preventDefault();
-    const response = await axios.post('/api/auth/register', state);
-    window.localStorage.setItem('userData', JSON.stringify(response.data));
-    console.log(response);
-    alert('registered');
-    history.push('/programs');
-    // } else {
-    //
-    // }
+    try {
+      // if (method === 'create') {
+      evt.preventDefault();
+      const response = await axios.post('/api/auth/register', state);
+      window.localStorage.setItem('userData', JSON.stringify(response.data));
+      console.log(response);
+      alert('registered');
+      history.push('/programs');
+      // } else {
+      //
+      // }
+    } catch (e) {
+      alert(e);
+    }
   };
 
   return (

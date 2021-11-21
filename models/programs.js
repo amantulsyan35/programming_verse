@@ -17,6 +17,7 @@ const programSchema = new Schema({
     {
       url: String,
       original_filename: String,
+      public_id: String,
     },
   ],
   code: {

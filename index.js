@@ -4,7 +4,7 @@ let cors = require('cors');
 app.use(cors());
 const mongoose = require('mongoose');
 const session = require('express-session');
-// const ExpressError = require('./utils/ExpressError');
+const ExpressError = require('./utils/ExpressError');
 const { urlencoded } = require('express');
 const passport = require('passport');
 const localStrategy = require('passport-local');
@@ -17,6 +17,7 @@ const User = require('./models/user');
 const programRoutes = require('./routes/programs');
 const reviewRoutes = require('./routes/reviews');
 const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 
 mongoose
   .connect('mongodb://localhost:27017/program')
@@ -58,16 +59,17 @@ passport.deserializeUser(User.deserializeUser());
 app.use('/api/programs', programRoutes);
 app.use('/api/programs/:id/reviews', reviewRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
-// app.all('*', (req, res, next) => {
-//   next(new ExpressError('Page Not Found', 404));
-// });
+app.all('*', (req, res, next) => {
+  next(new ExpressError('Page Not Found', 404));
+});
 
-// app.use((err, req, res, next) => {
-//   const { statusCode = 500 } = err;
-//   if (!err.message) err.message = 'Oh No, Something Went Wrong!';
-//   res.status(statusCode).send('error', { err });
-// });
+app.use((err, req, res, next) => {
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = 'Oh No, Something Went Wrong!';
+  res.status(statusCode).send('Oh No, Something Went Wrong!');
+});
 
 let PORT = 8080;
 app.listen(PORT, () => {

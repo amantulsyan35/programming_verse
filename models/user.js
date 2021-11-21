@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema({
   gitHubLink: {
     type: String,
   },
+  programs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Program',
+    },
+  ],
 });
 
 userSchema.plugin(passportLocalMongoose);

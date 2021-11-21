@@ -2,12 +2,13 @@ import React from 'react';
 import axios from 'axios';
 import { Link, useHistory } from 'react-router-dom';
 
-const Navbar = ({ data, handleData }) => {
+const Navbar = ({ data, handleData, handleUser, user }) => {
   let history = useHistory();
 
   const logout = async () => {
     await axios.get('/api/auth/logout');
     handleData(null);
+    handleUser(null);
     window.localStorage.clear();
     history.push('/');
     alert('logout');
@@ -88,6 +89,16 @@ const Navbar = ({ data, handleData }) => {
                       Logout
                     </button>
                   </li>
+                  {user && user._id && (
+                    <li className='nav-item'>
+                      <Link
+                        className='btn btn-outline-light btn-sm ms-2'
+                        to={`/users/${user._id}`}
+                      >
+                        My Profile
+                      </Link>
+                    </li>
+                  )}
                 </>
               )}
             </ul>

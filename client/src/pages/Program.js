@@ -26,19 +26,18 @@ const Program = ({ details }) => {
     try {
       async function getResponse() {
         const response = await axios.get(`/api/programs/${id}`);
-
         setProgram(response.data);
         setProgImages(response.data.images);
         setAuthorName(response.data.author.username);
-        console.log(response.data.reviews);
+        // console.log(response.data.reviews);
         setReviews(response.data.reviews);
         const response2 = await axios.get('/api/auth/currentuser');
+        // console.log(response2.data);
         setCurrentUser(response2.data);
-        console.log(`CurrentUser - ${response2.data}`);
       }
       getResponse();
     } catch (e) {
-      console.log(e);
+      alert(e);
     }
   }, [id]);
 
@@ -58,19 +57,30 @@ const Program = ({ details }) => {
   };
 
   const handleSubmit = async (evt) => {
-    await axios.post(`/api/programs/${id}/reviews`, state);
+    try {
+      await axios.post(`/api/programs/${id}/reviews`, state);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleDelete = async () => {
-    history.push('/programs');
-
-    await axios.delete(`/api/programs/${id}`);
+    try {
+      history.push('/programs');
+      await axios.delete(`/api/programs/${id}`);
+    } catch (e) {
+      alert(e);
+    }
   };
 
   const handleReviewDelete = async (rid) => {
-    const afterDeleteReviews = reviews.filter((review) => review._id !== rid);
-    setReviews(afterDeleteReviews);
-    await axios.delete(`/api/programs/${id}/reviews/${rid}`);
+    try {
+      const afterDeleteReviews = reviews.filter((review) => review._id !== rid);
+      setReviews(afterDeleteReviews);
+      await axios.delete(`/api/programs/${id}/reviews/${rid}`);
+    } catch (e) {
+      alert(e);
+    }
   };
 
   //TODO-1: WHY IS PROGRAM.IMAGES[0] UNDEFINED + AUTHOR TOO?
@@ -83,7 +93,6 @@ const Program = ({ details }) => {
           <ProgramCard
             id={program._id}
             title={program.title}
-            // image={program.images[0].url}
             description={program.description}
             language='javascript'
             code={program.code}

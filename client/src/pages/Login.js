@@ -3,7 +3,7 @@ import axios from 'axios';
 import FormInput from '../components/FormInput';
 import { useHistory } from 'react-router-dom';
 
-const Login = ({ handleData }) => {
+const Login = ({ handleData, handleUser }) => {
   let history = useHistory();
   const [state, setState] = useState({
     username: '',
@@ -20,14 +20,15 @@ const Login = ({ handleData }) => {
   const handleSubmit = async (evt) => {
     try {
       evt.preventDefault();
-      console.log(state);
       const response = await axios.post('/api/auth/login', state);
       window.localStorage.setItem('userData', JSON.stringify(response.data));
-      console.log(response);
+      handleData(response.data);
+      const response2 = await axios.get('/api/auth/currentuser');
+      handleUser(response2.data);
+
       history.push('/programs');
-      alert('logged in');
     } catch (e) {
-      console.log(e);
+      alert(e);
     }
   };
 

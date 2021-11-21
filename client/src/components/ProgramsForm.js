@@ -5,6 +5,8 @@ import FormInput from './FormInput';
 import Editor from './Editor';
 import { useHistory } from 'react-router';
 
+// import Error from './Error';
+
 const Form = ({ method, id }) => {
   const [state, setState] = useState({
     title: '',
@@ -18,18 +20,25 @@ const Form = ({ method, id }) => {
     code: '',
     linesOfCode: '',
   });
+  const [user, setUser] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
 
   let history = useHistory();
 
   useEffect(() => {
-    async function getResponse() {
-      if (id) {
-        const response = await axios.get(`/api/programs/${id}`);
-        setState(response.data);
+    try {
+      async function getResponse() {
+        if (id) {
+          const response = await axios.get(`/api/programs/${id}`);
+          setState(response.data);
+        }
+        const response2 = await axios.get('/api/auth/currentuser');
+        setUser(response2.data);
       }
+      getResponse();
+    } catch (e) {
+      alert(e);
     }
-    getResponse();
   }, [id]);
 
   const createImages = async (method) => {
@@ -40,14 +49,14 @@ const Form = ({ method, id }) => {
       formData.append('file', file);
       formData.append('upload_preset', 'wk36xs0c');
 
-      return axios.post(UPLOAD_URL, formData);
+      return await axios.post(UPLOAD_URL, formData);
     });
 
     Promise.all(workers)
       .then(async (responseList) => {
         const images = responseList.map((response) => {
-          const { url, original_filename } = response.data;
-          return { url, original_filename };
+          const { url, original_filename, public_id } = response.data;
+          return { url, original_filename, public_id };
         });
 
         const { title, description, code, linesOfCode } = state;
@@ -63,27 +72,26 @@ const Form = ({ method, id }) => {
           const response2 = await axios.post('/api/programs', data);
           console.log(response2);
         } else {
-          const response2 = await axios.put(`/api/programs/${id}/edit`, data);
-          console.log(response2);
+          await axios.put(`/api/programs/${id}/edit`, data);
         }
       })
       .catch((error) => {
-        console.error(error);
+        alert(error);
       });
   };
 
-  const handleSubmit = async (evt) => {
+  const handleSubmit = (evt) => {
     try {
       if (method === 'create') {
         evt.preventDefault();
+        createImages();
         history.push('/programs');
-        await createImages('create');
       } else {
         history.push(`/programs/${id}`);
-        await createImages('edit');
+        createImages('edit');
       }
     } catch (e) {
-      console.log(e);
+      alert(e);
     }
   };
 
@@ -98,57 +106,65 @@ const Form = ({ method, id }) => {
       [name]: value,
     });
   };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <FormInput
-        type='text'
-        label='title'
-        handleChange={handleChange}
-        name='title'
-        value={state.title}
-        className='form-control'
-      />
-      <div className='mb-3'>
-        <label className='form-label'>Image</label>
-        <input
-          type='file'
-          onChange={onUploadImage}
-          name='image'
+  if (user) {
+    return (
+      <form onSubmit={handleSubmit}>
+        <FormInput
+          type='text'
+          label='title'
+          handleChange={handleChange}
+          name='title'
+          value={state.title}
           className='form-control'
-          multiple
         />
-      </div>
-      <FormInput
-        type='textarea'
-        label='description'
-        handleChange={handleChange}
-        name='description'
-        value={state.description}
-        className='form-control'
-      />
-      <Editor
-        language='javascript'
-        value={state.code}
-        handleChange={handleChange}
-        name='code'
-        readOnly={false}
-      />
+        <div className='mb-3'>
+          <label className='form-label'>Image</label>
+          <input
+            type='file'
+            onChange={onUploadImage}
+            name='image'
+            className='form-control'
+            multiple
+          />
+        </div>
+        <FormInput
+          type='textarea'
+          label='description'
+          handleChange={handleChange}
+          name='description'
+          value={state.description}
+          className='form-control'
+        />
+        <Editor
+          language='javascript'
+          value={state.code}
+          handleChange={handleChange}
+          name='code'
+          readOnly={false}
+        />
 
-      <FormInput
-        type='number'
-        label='Lines Of Code'
-        handleChange={handleChange}
-        name='linesOfCode'
-        value={state.linesOfCode}
-        className='form-control'
-      />
+        <FormInput
+          type='number'
+          label='Lines Of Code'
+          handleChange={handleChange}
+          name='linesOfCode'
+          value={state.linesOfCode}
+          className='form-control'
+        />
 
-      <div className='mb-3'>
-        <input className='btn btn-success ' type='submit' />
-      </div>
-    </form>
-  );
+        <div className='mb-3'>
+          <input className='btn btn-success ' type='submit' />
+        </div>
+      </form>
+    );
+  } else {
+    return (
+      <h1>
+        You seem to be logged out due to some server error, Login first to
+        create{' '}
+      </h1>
+    );
+  }
 };
 
 export default Form;
