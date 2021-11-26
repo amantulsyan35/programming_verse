@@ -6,9 +6,9 @@ const User = require('../models/user');
 
 router.post('/register', async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
-    const user = new User({ email, username });
-    const registeredUser = await User.register(user, password);
+    // const { username, email, password } = req.body;
+    const user = new User(req.body);
+    const registeredUser = await User.register(user, req.body.password);
     req.login(registeredUser, (err) => {
       if (err) return next(err);
       res.send(registeredUser);

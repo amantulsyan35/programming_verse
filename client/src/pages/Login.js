@@ -21,9 +21,10 @@ const Login = ({ handleData, handleUser }) => {
     try {
       evt.preventDefault();
       const response = await axios.post('/api/auth/login', state);
-      window.localStorage.setItem('userData', JSON.stringify(response.data));
+      window.sessionStorage.setItem('userData', JSON.stringify(response.data));
       handleData(response.data);
       const response2 = await axios.get('/api/auth/currentuser');
+      window.sessionStorage.setItem('user', JSON.stringify(response2.data));
       handleUser(response2.data);
 
       history.push('/programs');

@@ -1,16 +1,17 @@
 const express = require('express');
+require('dotenv').config();
 const router = express.Router();
 const { isLoggedIn, isAuthor } = require('../middlewares/middleware');
-const cloudinary = require('cloudinary').v2;
+// const cloudinary = require('cloudinary').v2;
 
 const Program = require('../models/programs');
 const User = require('../models/user');
 
-cloudinary.config({
-  cloud_name: 'dkrdwicst',
-  api_key: '855883924678522',
-  api_secret: 'DlQicoPcUEcnFp_mka1e1KQNGtQ',
-});
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_KEY,
+//   api_secret: process.env.CLOUDINARY_SECRET,
+// });
 
 router.get('/', async (req, res, next) => {
   try {
@@ -38,12 +39,13 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-router.post('/', isLoggedIn, async (req, res, next) => {
+router.post('/', isLoggedIn, async (req, res) => {
   try {
     const program = new Program(req.body);
     const user = await User.findById(req.user._id);
     program.author = req.user._id;
     user.programs.push(program);
+    // Promise.all
     await program.save();
     await user.save();
   } catch (e) {
@@ -51,18 +53,18 @@ router.post('/', isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.put('/:id/edit', isLoggedIn, isAuthor, async (req, res) => {
+router.put('/:id/edit', isLoggedIn, isAuthor, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const program = await Program.findById(id);
-    if (program.images) {
-      for (let filename of program.images) {
-        await cloudinary.uploader.destroy(
-          filename.public_id,
-          (err, result) => {}
-        );
-      }
-    }
+    // const program = await Program.findById(id);
+    // if (program.images) {
+    //   for (let filename of program.images) {
+    //     await cloudinary.uploader.destroy(
+    //       filename.public_id,
+    //       (err, result) => {}
+    //     );
+    //   }
+    // }
     await Program.findByIdAndUpdate(id, req.body, {
       runValidators: true,
       new: true,
@@ -72,19 +74,20 @@ router.put('/:id/edit', isLoggedIn, isAuthor, async (req, res) => {
   }
 });
 
-router.delete('/:id', isLoggedIn, isAuthor, async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, async (req, res, next) => {
   try {
     const { id } = req.params;
     const program = await Program.findById(id);
-    if (program.images) {
-      for (let filename of program.images) {
-        await cloudinary.uploader.destroy(
-          filename.public_id,
-          (err, result) => {}
-        );
-      }
-    }
     await Program.findByIdAndDelete(id);
+    // if (program.images) {
+    //   for (let filename of program.images) {
+    //     console.log(filename.public_id);
+    //     await cloudinary.uploader.destroy(filename.public_id, (err, result) => {
+    //       console.log(err);
+    //       console.log(result);
+    //     });
+    //   }
+    // }
   } catch (e) {
     next(e);
   }

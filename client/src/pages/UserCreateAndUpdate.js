@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FormInput from '../components/FormInput';
 
 import { useHistory } from 'react-router-dom';
 
-const UserCreateAndUpdate = ({ details, method, handleData }) => {
+const UserCreateAndUpdate = ({ details }) => {
+  const { id } = details.match.params;
+  let history = useHistory();
   const [state, setState] = useState({
     username: '',
     bio: '',
@@ -13,8 +15,21 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
     email: '',
     password: '',
   });
-  const { id } = details.match.params;
-  let history = useHistory();
+
+  useEffect(() => {
+    try {
+      async function getResponse() {
+        if (id) {
+          const response = await axios.get(`/api/users/${id}`);
+          setState(response.data);
+        }
+      }
+      getResponse();
+    } catch (e) {
+      alert(e);
+    }
+  }, [id]);
+
   const handleChange = (value, name) => {
     setState({
       ...state,
@@ -24,33 +39,34 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
 
   const handleSubmit = async (evt) => {
     try {
-      // if (method === 'create') {
-      evt.preventDefault();
-      const response = await axios.post('/api/auth/register', state);
-      window.localStorage.setItem('userData', JSON.stringify(response.data));
-      console.log(response);
-      alert('registered');
-      history.push('/programs');
-      // } else {
-      //
-      // }
+      if (id) {
+        evt.preventDefault();
+        history.push(`/programs`);
+        await axios.put(`/api/users/edit/${id}`, state);
+      } else {
+        evt.preventDefault();
+        const response = await axios.post('/api/auth/register', state);
+        window.localStorage.setItem('userData', JSON.stringify(response.data));
+        alert('registered');
+        history.push('/programs');
+      }
     } catch (e) {
       alert(e);
     }
   };
 
   return (
-    <div class='container d-flex justify-content-center align-items-center mt-5 mb-5'>
-      <div class='row'>
-        <div class='col-md-6  col-xl-12 '>
-          <div class='card shadow'>
+    <div className='container d-flex justify-content-center align-items-center mt-5 mb-5'>
+      <div className='row'>
+        <div className='col-md-6  col-xl-12 '>
+          <div className='card shadow'>
             <img
               src='https://www.assetinfinity.com/blog/wp-content/uploads/2020/10/Fixed-Asset-Register.jpg'
               alt=''
-              class='card-img-top'
+              className='card-img-top'
             />
-            <div class='card-body'>
-              <h5 class='card-title'>
+            <div className='card-body'>
+              <h5 className='card-title'>
                 {id ? 'Edit User Details' : 'Create a New User'}
               </h5>
               <form onSubmit={handleSubmit}>
@@ -59,7 +75,7 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
                   label='Username'
                   handleChange={handleChange}
                   name='username'
-                  value={state.username}
+                  value={state.username || ''}
                   className='form-control'
                 />
                 <FormInput
@@ -67,7 +83,7 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
                   label='Enter Bio'
                   handleChange={handleChange}
                   name='bio'
-                  value={state.bio}
+                  value={state.bio || ''}
                   className='form-control'
                 />
                 <FormInput
@@ -75,7 +91,7 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
                   label='Upload Profile Picture'
                   handleChange={handleChange}
                   name='profilePicture'
-                  value={state.profilePicture}
+                  value={state.profilePicture || ''}
                   className='form-control'
                 />
                 <FormInput
@@ -83,7 +99,7 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
                   label='Enter Your Github Link'
                   handleChange={handleChange}
                   name='gitHubLink'
-                  value={state.gitHubLink}
+                  value={state.gitHubLink || ''}
                   className='form-control'
                 />
                 <FormInput
@@ -91,7 +107,7 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
                   label='Enter Email'
                   handleChange={handleChange}
                   name='email'
-                  value={state.email}
+                  value={state.email || ''}
                   className='form-control'
                 />
                 <FormInput
@@ -99,9 +115,10 @@ const UserCreateAndUpdate = ({ details, method, handleData }) => {
                   label='Enter Password'
                   handleChange={handleChange}
                   name='password'
-                  value={state.password}
+                  value={state.password || ''}
                   className='form-control'
                 />
+
                 <div className='mb-3'>
                   <input className='btn btn-success' type='submit' />
                 </div>

@@ -11,6 +11,7 @@ const Input = ({
   min,
   max,
   className,
+  placeholder,
 }) => {
   const change = (evt) => {
     handleChange(evt.target.value, evt.target.name);
@@ -29,6 +30,7 @@ const Input = ({
           rows={rows}
           cols={cols}
           required
+          placeholder={placeholder}
         />
       ) : (
         <input
@@ -40,6 +42,7 @@ const Input = ({
           min={min}
           max={max}
           required
+          placeholder={placeholder}
         />
       )}
     </div>

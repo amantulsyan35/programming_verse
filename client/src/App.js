@@ -16,10 +16,11 @@ import User from './pages/User';
 import ProtectedRoute from './ProtectedRoutes';
 
 function App() {
-  const userInfo = JSON.parse(window.localStorage.getItem('userData'));
+  const userInfo = JSON.parse(window.sessionStorage.getItem('userData'));
+  const currUser = JSON.parse(window.sessionStorage.getItem('user'));
 
   const [data, setData] = useState(userInfo);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(currUser);
 
   const handleData = (res) => {
     setData(res);
@@ -58,6 +59,11 @@ function App() {
         <Route
           exact
           path='/auth/register'
+          render={(routeProps) => <UserCreateAndUpdate details={routeProps} />}
+        />
+        <Route
+          exact
+          path='/auth/edit/:id'
           render={(routeProps) => <UserCreateAndUpdate details={routeProps} />}
         />
         <Route

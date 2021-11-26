@@ -9,7 +9,7 @@ const Navbar = ({ data, handleData, handleUser, user }) => {
     await axios.get('/api/auth/logout');
     handleData(null);
     handleUser(null);
-    window.localStorage.clear();
+    window.sessionStorage.clear();
     history.push('/');
     alert('logout');
   };
@@ -89,7 +89,7 @@ const Navbar = ({ data, handleData, handleUser, user }) => {
                       Logout
                     </button>
                   </li>
-                  {user && user._id && (
+                  {data !== null && user && (
                     <li className='nav-item'>
                       <Link
                         className='btn btn-outline-light btn-sm ms-2'

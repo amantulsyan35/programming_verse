@@ -49,7 +49,7 @@ const Form = ({ method, id }) => {
       formData.append('file', file);
       formData.append('upload_preset', 'wk36xs0c');
 
-      return await axios.post(UPLOAD_URL, formData);
+      return axios.post(UPLOAD_URL, formData);
     });
 
     Promise.all(workers)
@@ -68,27 +68,62 @@ const Form = ({ method, id }) => {
           linesOfCode,
         };
 
-        if (method === 'create') {
-          const response2 = await axios.post('/api/programs', data);
-          console.log(response2);
-        } else {
-          await axios.put(`/api/programs/${id}/edit`, data);
-        }
+        alert('posted successfully');
+        await axios.post('/api/programs', data);
       })
       .catch((error) => {
         alert(error);
       });
   };
 
-  const handleSubmit = (evt) => {
+  const editImages = async (method) => {
+    const UPLOAD_URL = 'https://api.cloudinary.com/v1_1/dkrdwicst/image/upload';
+
+    const formData = new FormData();
+    const workers = Array.from(selectedImage).map(async (file) => {
+      formData.append('file', file);
+      formData.append('upload_preset', 'wk36xs0c');
+
+      return axios.post(UPLOAD_URL, formData);
+    });
+
+    Promise.all(workers)
+      .then(async (responseList) => {
+        const images = responseList.map((response) => {
+          const { url, original_filename, public_id } = response.data;
+          return { url, original_filename, public_id };
+        });
+
+        const { title, description, code, linesOfCode } = state;
+        const data = {
+          title,
+          images,
+          description,
+          code,
+          linesOfCode,
+        };
+
+        alert('edited successfully');
+        await axios.put(`/api/programs/${id}/edit`, data);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  };
+
+  const handleSubmit = async (evt) => {
     try {
       if (method === 'create') {
         evt.preventDefault();
-        createImages();
-        history.push('/programs');
+        await createImages();
+        alert('please wait it may take sometime');
+        setTimeout(() => {
+          history.push('/programs');
+        }, 5000);
       } else {
-        history.push(`/programs/${id}`);
-        createImages('edit');
+        await editImages();
+        history.push(`/programs`);
+        alert('please wait it may take sometime');
       }
     } catch (e) {
       alert(e);
