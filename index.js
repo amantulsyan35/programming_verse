@@ -13,6 +13,7 @@ const { urlencoded } = require('express');
 const passport = require('passport');
 const localStrategy = require('passport-local');
 const mongoSanitize = require('express-mongo-sanitize');
+const path = require('path');
 
 //models
 const User = require('./models/user');
@@ -23,8 +24,10 @@ const reviewRoutes = require('./routes/reviews');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 
+const dbUrl = process.env.DB_URL;
+
 mongoose
-  .connect('mongodb://localhost:27017/program')
+  .connect(dbUrl)
   .then(() => console.log('Database connected'))
   .catch((err) => console.log(err));
 
@@ -36,8 +39,11 @@ app.use(
   })
 );
 
+const secret = process.env.SECRET;
+
 const sessionConfig = {
-  secret: 'thisshouldbeabettersecret',
+  name: 'Session',
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -55,19 +61,10 @@ passport.use(new localStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// app.use((req, res, next) => {
-//   res.locals.currentUser = req.user;
-//   next();
-// });
-
 app.use('/api/programs', programRoutes);
 app.use('/api/programs/:id/reviews', reviewRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-
-app.all('*', (req, res, next) => {
-  next(new ExpressError('Page Not Found', 404));
-});
 
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
@@ -75,7 +72,18 @@ app.use((err, req, res, next) => {
   res.status(statusCode).send('Oh No, Something Went Wrong!');
 });
 
-let PORT = 8080;
-app.listen(PORT, () => {
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static('client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
+
+const port = process.env.PORT || 8080;
+
+app.listen(port, () => {
   console.log('server is running');
 });

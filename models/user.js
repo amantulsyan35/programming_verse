@@ -9,11 +9,11 @@ const userSchema = new mongoose.Schema({
   },
   bio: {
     type: String,
-    // required: true,
+    required: true,
   },
   profilePicture: {
     type: String,
-    // required: true,
+    required: true,
   },
   gitHubLink: {
     type: String,
