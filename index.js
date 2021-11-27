@@ -66,12 +66,6 @@ app.use('/api/programs/:id/reviews', reviewRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
-// app.use((err, req, res, next) => {
-//   const { statusCode = 500 } = err;
-//   if (!err.message) err.message = 'Oh No, Something Went Wrong!';
-//   res.status(statusCode).send('Oh No, Something Went Wrong!');
-// });
-
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
   // Set static folder
@@ -81,6 +75,12 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 }
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = 'Oh No, Something Went Wrong!';
+  res.status(statusCode).send('Oh No, Something Went Wrong!');
+});
 
 const port = process.env.PORT || 8080;
 
